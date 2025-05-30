@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sidebar } from "@/components/Sidebar";
 import { Badge } from "@/components/ui/badge";
+import { DraggableNode } from "@/components/DraggableNode";
 import { 
   Play, 
   Save, 
@@ -19,9 +19,7 @@ import {
   Copy,
   Share,
   Download,
-  Upload,
-  Undo,
-  Redo
+  Upload
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
@@ -76,6 +74,12 @@ const WorkflowBuilder = () => {
 
   const handleSelectNode = (node) => {
     setSelectedNode(node);
+  };
+
+  const handleNodePositionChange = (nodeId, x, y) => {
+    setNodes(nodes.map(node => 
+      node.id === nodeId ? { ...node, x, y } : node
+    ));
   };
 
   const handleSave = () => {
@@ -172,7 +176,7 @@ const WorkflowBuilder = () => {
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
       
-      <div className="flex-1 flex flex-col">
+      <div className="flex flex-1 flex-col">
         {/* Header */}
         <div className="bg-white border-b px-6 py-4">
           <div className="flex items-center justify-between">
@@ -288,7 +292,10 @@ const WorkflowBuilder = () => {
           {/* Canvas */}
           <div className="flex-1 bg-gray-100 relative overflow-hidden">
             <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-            <div className="relative h-full p-8">
+            <div 
+              className="relative h-full p-8"
+              onClick={() => setSelectedNode(null)}
+            >
               {nodes.length === 0 ? (
                 <div className="flex items-center justify-center h-full">
                   <Card className="max-w-md text-center">
@@ -309,38 +316,15 @@ const WorkflowBuilder = () => {
               ) : (
                 <div className="relative">
                   {nodes.map((node) => (
-                    <div
+                    <DraggableNode
                       key={node.id}
-                      className={`absolute bg-white border rounded-lg p-4 shadow-sm cursor-pointer hover:shadow-md transition-all ${
-                        selectedNode?.id === node.id ? 'ring-2 ring-blue-500 shadow-lg' : ''
-                      }`}
-                      style={{ left: node.x, top: node.y }}
+                      node={node}
+                      isSelected={selectedNode?.id === node.id}
                       onClick={() => handleSelectNode(node)}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <div className={`p-1 rounded ${nodeTypes.find(t => t.type === node.type)?.color}`}>
-                          {/* Icon would go here */}
-                        </div>
-                        <div>
-                          <div className="font-medium text-sm">{node.label}</div>
-                          <div className="text-xs text-gray-500 capitalize">{node.type}</div>
-                        </div>
-                      </div>
-                      {selectedNode?.id === node.id && (
-                        <div className="mt-2 pt-2 border-t">
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteNode(node.id);
-                            }}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      )}
-                    </div>
+                      onDelete={() => handleDeleteNode(node.id)}
+                      onPositionChange={(x, y) => handleNodePositionChange(node.id, x, y)}
+                      nodeTypes={nodeTypes}
+                    />
                   ))}
                   
                   {/* Connection lines between nodes */}

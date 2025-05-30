@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Sidebar } from "@/components/Sidebar";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { TemplatePreview } from "@/components/TemplatePreview";
 import { 
   Search, 
   Star, 
@@ -26,6 +27,7 @@ const Templates = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("popular");
+  const [previewTemplate, setPreviewTemplate] = useState(null);
   const navigate = useNavigate();
 
   const templates = [
@@ -128,10 +130,7 @@ const Templates = () => {
   };
 
   const handlePreview = (template) => {
-    toast({
-      title: "Template Preview",
-      description: `Previewing "${template.title}" - This would show a detailed view`,
-    });
+    setPreviewTemplate(template);
   };
 
   const handleFavorite = (template) => {
@@ -331,6 +330,12 @@ const Templates = () => {
           )}
         </div>
       </div>
+
+      <TemplatePreview 
+        template={previewTemplate}
+        isOpen={!!previewTemplate}
+        onClose={() => setPreviewTemplate(null)}
+      />
     </div>
   );
 };
