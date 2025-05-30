@@ -1,8 +1,11 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const CTA = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="py-20 px-4 bg-gradient-to-r from-blue-600 to-indigo-700">
       <div className="max-w-4xl mx-auto text-center">
@@ -15,12 +18,22 @@ export const CTA = () => {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button size="lg" variant="secondary" className="px-8 py-3">
+          <Button 
+            size="lg" 
+            variant="secondary" 
+            className="px-8 py-3"
+            onClick={() => navigate('/register')}
+          >
             Start Free Trial
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
           
-          <Button size="lg" variant="outline" className="px-8 py-3 text-white border-white hover:bg-white hover:text-blue-600">
+          <Button 
+            size="lg" 
+            variant="outline" 
+            className="px-8 py-3 text-white border-white hover:bg-white hover:text-blue-600"
+            onClick={() => window.open('https://calendly.com/demo', '_blank')}
+          >
             Schedule Demo
           </Button>
         </div>

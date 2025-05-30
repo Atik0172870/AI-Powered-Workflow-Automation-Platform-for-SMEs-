@@ -2,6 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Scale, Calculator, Home, Heart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const templates = [
   {
@@ -35,6 +36,8 @@ const templates = [
 ];
 
 export const Templates = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="py-20 px-4 bg-gray-50">
       <div className="max-w-7xl mx-auto">
@@ -68,7 +71,11 @@ export const Templates = () => {
                       </li>
                     ))}
                   </ul>
-                  <Button variant="outline" className="w-full">
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => navigate('/templates')}
+                  >
                     View Templates
                   </Button>
                 </CardContent>

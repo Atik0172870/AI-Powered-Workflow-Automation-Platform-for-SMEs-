@@ -2,6 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const plans = [
   {
@@ -48,6 +49,16 @@ const plans = [
 ];
 
 export const Pricing = () => {
+  const navigate = useNavigate();
+
+  const handlePlanSelect = (plan) => {
+    if (plan.cta === "Contact Sales") {
+      window.open('mailto:sales@flowlyai.com?subject=Enterprise Plan Inquiry', '_blank');
+    } else {
+      navigate('/register');
+    }
+  };
+
   return (
     <section className="py-20 px-4 bg-white">
       <div className="max-w-7xl mx-auto">
@@ -93,6 +104,7 @@ export const Pricing = () => {
                 <Button 
                   className={`w-full ${plan.popular ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
                   variant={plan.popular ? 'default' : 'outline'}
+                  onClick={() => handlePlanSelect(plan)}
                 >
                   {plan.cta}
                 </Button>
