@@ -10,7 +10,9 @@ import {
   BarChart3, 
   Users, 
   Clock,
-  TrendingUp
+  TrendingUp,
+  FileText,
+  Settings
 } from "lucide-react";
 
 const Dashboard = () => {
