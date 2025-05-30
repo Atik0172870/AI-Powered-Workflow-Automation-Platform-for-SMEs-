@@ -1,5 +1,5 @@
 
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { 
   Home, 
@@ -7,8 +7,10 @@ import {
   BarChart3, 
   Workflow, 
   FileText,
-  LogOut
+  LogOut,
+  User
 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -20,16 +22,31 @@ const navigation = [
 
 export const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Clear any stored user data
+    localStorage.removeItem('selectedTemplate');
+    localStorage.removeItem('userToken');
+    
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out",
+    });
+    
+    // Navigate to home page
+    navigate('/');
+  };
 
   return (
-    <div className="w-64 bg-white shadow-sm border-r h-screen">
+    <div className="w-64 bg-white shadow-sm border-r h-screen flex flex-col">
       <div className="p-6">
-        <Link to="/dashboard" className="text-2xl font-bold text-blue-600">
+        <Link to="/dashboard" className="text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors">
           FlowlyAI
         </Link>
       </div>
       
-      <nav className="mt-6 px-3">
+      <nav className="mt-6 px-3 flex-1">
         <ul className="space-y-1">
           {navigation.map((item) => {
             const isActive = location.pathname === item.href;
@@ -53,8 +70,21 @@ export const Sidebar = () => {
         </ul>
       </nav>
       
-      <div className="absolute bottom-0 w-64 p-4">
-        <button className="flex items-center w-full px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900">
+      {/* User section */}
+      <div className="p-4 border-t">
+        <div className="flex items-center space-x-3 px-3 py-2 mb-2">
+          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+            <User className="h-4 w-4 text-blue-600" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-gray-900">John Doe</p>
+            <p className="text-xs text-gray-500">john@company.com</p>
+          </div>
+        </div>
+        <button 
+          onClick={handleLogout}
+          className="flex items-center w-full px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900 transition-colors"
+        >
           <LogOut className="mr-3 h-5 w-5" />
           Logout
         </button>

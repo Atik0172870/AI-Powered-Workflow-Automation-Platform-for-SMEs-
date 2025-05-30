@@ -1,6 +1,9 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Sidebar } from "@/components/Sidebar";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   BarChart, 
   Bar, 
@@ -13,40 +16,75 @@ import {
   Line,
   PieChart,
   Pie,
-  Cell
+  Cell,
+  Area,
+  AreaChart
 } from "recharts";
+import { 
+  TrendingUp, 
+  TrendingDown, 
+  Activity, 
+  Clock, 
+  CheckCircle, 
+  XCircle,
+  Download,
+  Calendar,
+  Filter
+} from "lucide-react";
+import { useState } from "react";
+import { toast } from "@/hooks/use-toast";
 
 const Analytics = () => {
-  const workflowData = [
-    { name: 'Jan', workflows: 65, automations: 234 },
-    { name: 'Feb', workflows: 59, automations: 267 },
-    { name: 'Mar', workflows: 80, automations: 398 },
-    { name: 'Apr', workflows: 81, automations: 445 },
-    { name: 'May', workflows: 56, automations: 321 },
-    { name: 'Jun', workflows: 95, automations: 567 }
+  const [timeRange, setTimeRange] = useState("7d");
+  const [selectedMetric, setSelectedMetric] = useState("executions");
+
+  // Sample data for charts
+  const executionData = [
+    { date: "Mon", executions: 45, success: 42, failed: 3 },
+    { date: "Tue", executions: 52, success: 49, failed: 3 },
+    { date: "Wed", executions: 38, success: 36, failed: 2 },
+    { date: "Thu", executions: 61, success: 58, failed: 3 },
+    { date: "Fri", executions: 55, success: 53, failed: 2 },
+    { date: "Sat", executions: 29, success: 28, failed: 1 },
+    { date: "Sun", executions: 41, success: 39, failed: 2 }
   ];
 
-  const successRateData = [
-    { name: 'Week 1', rate: 98.2 },
-    { name: 'Week 2', rate: 97.8 },
-    { name: 'Week 3', rate: 99.1 },
-    { name: 'Week 4', rate: 98.5 }
+  const performanceData = [
+    { name: "Email Automation", value: 35, color: "#3B82F6" },
+    { name: "Data Processing", value: 25, color: "#10B981" },
+    { name: "Client Intake", value: 20, color: "#F59E0B" },
+    { name: "Document Gen", value: 15, color: "#EF4444" },
+    { name: "Other", value: 5, color: "#8B5CF6" }
   ];
 
-  const categoryData = [
-    { name: 'Email Automation', value: 35, color: '#3B82F6' },
-    { name: 'Data Processing', value: 25, color: '#10B981' },
-    { name: 'CRM Integration', value: 20, color: '#F59E0B' },
-    { name: 'Document Gen', value: 12, color: '#EF4444' },
-    { name: 'Other', value: 8, color: '#8B5CF6' }
+  const timeData = [
+    { date: "Week 1", timeSaved: 24 },
+    { date: "Week 2", timeSaved: 31 },
+    { date: "Week 3", timeSaved: 28 },
+    { date: "Week 4", timeSaved: 39 }
   ];
 
-  const stats = [
-    { title: "Total Workflows", value: "156", change: "+12%", changeType: "positive" },
-    { title: "Successful Runs", value: "2,847", change: "+8%", changeType: "positive" },
-    { title: "Time Saved", value: "342h", change: "+15%", changeType: "positive" },
-    { title: "Error Rate", value: "1.2%", change: "-0.3%", changeType: "positive" }
+  const topWorkflows = [
+    { name: "Client Intake Process", executions: 156, successRate: 98.5, avgTime: "2.3m" },
+    { name: "Invoice Automation", executions: 142, successRate: 97.2, avgTime: "1.8m" },
+    { name: "Lead Nurturing", executions: 98, successRate: 96.9, avgTime: "4.1m" },
+    { name: "Document Processing", executions: 87, successRate: 99.1, avgTime: "3.2m" },
+    { name: "Email Campaigns", executions: 76, successRate: 94.7, avgTime: "1.5m" }
   ];
+
+  const handleExportData = () => {
+    toast({
+      title: "Export Started",
+      description: "Your analytics data is being prepared for download.",
+    });
+  };
+
+  const handleRefreshData = () => {
+    toast({
+      title: "Data Refreshed",
+      description: "Analytics data has been updated with the latest information.",
+    });
+  };
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -54,140 +92,182 @@ const Analytics = () => {
       
       <div className="flex-1 overflow-auto">
         <div className="p-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics & Reports</h1>
-            <p className="text-gray-600">Track your workflow performance and automation metrics</p>
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Analytics</h1>
+              <p className="text-gray-600">Monitor your workflow performance and insights</p>
+            </div>
+            <div className="flex items-center space-x-3">
+              <Select value={timeRange} onValueChange={setTimeRange}>
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="24h">Last 24h</SelectItem>
+                  <SelectItem value="7d">Last 7 days</SelectItem>
+                  <SelectItem value="30d">Last 30 days</SelectItem>
+                  <SelectItem value="90d">Last 90 days</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button variant="outline" onClick={handleRefreshData}>
+                <Activity className="mr-2 h-4 w-4" />
+                Refresh
+              </Button>
+              <Button onClick={handleExportData}>
+                <Download className="mr-2 h-4 w-4" />
+                Export
+              </Button>
+            </div>
           </div>
 
-          {/* Stats Overview */}
+          {/* KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {stats.map((stat, index) => (
-              <Card key={index}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stat.value}</div>
-                  <p className={`text-xs ${stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'}`}>
-                    {stat.change} from last month
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Executions</CardTitle>
+                <Activity className="h-4 w-4 text-blue-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">1,247</div>
+                <div className="flex items-center text-xs text-green-600">
+                  <TrendingUp className="mr-1 h-3 w-3" />
+                  +12.5% from last week
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
+                <CheckCircle className="h-4 w-4 text-green-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">97.8%</div>
+                <div className="flex items-center text-xs text-green-600">
+                  <TrendingUp className="mr-1 h-3 w-3" />
+                  +0.8% from last week
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Avg. Execution Time</CardTitle>
+                <Clock className="h-4 w-4 text-orange-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">2.4m</div>
+                <div className="flex items-center text-xs text-red-600">
+                  <TrendingDown className="mr-1 h-3 w-3" />
+                  -0.3m from last week
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Failed Executions</CardTitle>
+                <XCircle className="h-4 w-4 text-red-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">27</div>
+                <div className="flex items-center text-xs text-green-600">
+                  <TrendingDown className="mr-1 h-3 w-3" />
+                  -15% from last week
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Charts Grid */}
+          {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Workflow Activity */}
             <Card>
               <CardHeader>
-                <CardTitle>Workflow Activity</CardTitle>
-                <CardDescription>Monthly workflow creation and automation runs</CardDescription>
+                <CardTitle>Execution Trends</CardTitle>
+                <CardDescription>Daily workflow executions over time</CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={workflowData}>
+                  <AreaChart data={executionData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
+                    <XAxis dataKey="date" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="workflows" fill="#3B82F6" name="Workflows Created" />
-                    <Bar dataKey="automations" fill="#10B981" name="Automations Run" />
-                  </BarChart>
+                    <Area type="monotone" dataKey="executions" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.1} />
+                    <Area type="monotone" dataKey="success" stroke="#10B981" fill="#10B981" fillOpacity={0.2} />
+                  </AreaChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
 
-            {/* Success Rate Trend */}
             <Card>
               <CardHeader>
-                <CardTitle>Success Rate Trend</CardTitle>
-                <CardDescription>Weekly workflow success percentage</CardDescription>
+                <CardTitle>Workflow Distribution</CardTitle>
+                <CardDescription>Execution breakdown by workflow type</CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={successRateData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis domain={[95, 100]} />
-                    <Tooltip />
-                    <Line 
-                      type="monotone" 
-                      dataKey="rate" 
-                      stroke="#3B82F6" 
-                      strokeWidth={2}
-                      name="Success Rate (%)"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Workflow Categories */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Workflow Categories</CardTitle>
-                <CardDescription>Distribution of workflow types</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={250}>
                   <PieChart>
                     <Pie
-                      data={categoryData}
+                      data={performanceData}
                       cx="50%"
                       cy="50%"
-                      outerRadius={80}
+                      outerRadius={100}
                       dataKey="value"
+                      label={({ name, value }) => `${name}: ${value}%`}
                     >
-                      {categoryData.map((entry, index) => (
+                      {performanceData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
                     <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
-                <div className="mt-4 space-y-2">
-                  {categoryData.map((item, index) => (
-                    <div key={index} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center">
-                        <div 
-                          className="w-3 h-3 rounded-full mr-2" 
-                          style={{ backgroundColor: item.color }}
-                        ></div>
-                        {item.name}
-                      </div>
-                      <span className="font-medium">{item.value}%</span>
-                    </div>
-                  ))}
-                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle>Time Saved Analysis</CardTitle>
+                <CardDescription>Weekly time savings from automation</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={timeData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => [`${value} hours`, "Time Saved"]} />
+                    <Bar dataKey="timeSaved" fill="#10B981" />
+                  </BarChart>
+                </ResponsiveContainer>
               </CardContent>
             </Card>
 
-            {/* Top Performing Workflows */}
-            <Card className="lg:col-span-2">
+            <Card>
               <CardHeader>
                 <CardTitle>Top Performing Workflows</CardTitle>
-                <CardDescription>Most successful workflows this month</CardDescription>
+                <CardDescription>Most active workflows this week</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {[
-                    { name: "Client Intake Process", runs: 234, success: 99.1 },
-                    { name: "Invoice Automation", runs: 187, success: 98.9 },
-                    { name: "Lead Nurturing Campaign", runs: 145, success: 97.8 },
-                    { name: "Document Processing", runs: 123, success: 98.2 },
-                    { name: "Appointment Scheduling", runs: 98, success: 99.5 }
-                  ].map((workflow, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div>
-                        <p className="font-medium">{workflow.name}</p>
-                        <p className="text-sm text-gray-600">{workflow.runs} runs</p>
+                  {topWorkflows.map((workflow, index) => (
+                    <div key={index} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium truncate">{workflow.name}</p>
+                        <Badge variant="secondary">{workflow.executions}</Badge>
                       </div>
-                      <div className="text-right">
-                        <p className="font-medium text-green-600">{workflow.success}%</p>
-                        <p className="text-sm text-gray-600">Success Rate</p>
+                      <div className="flex items-center justify-between text-xs text-gray-600">
+                        <span>{workflow.successRate}% success</span>
+                        <span>{workflow.avgTime} avg</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-1">
+                        <div 
+                          className="bg-blue-600 h-1 rounded-full" 
+                          style={{ width: `${workflow.successRate}%` }}
+                        ></div>
                       </div>
                     </div>
                   ))}
